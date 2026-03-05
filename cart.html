@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - Indian Idol Paintings</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Source+Sans+3:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">🕉</span>
+                <span class="logo-text">Indian Idol Paintings</span>
+            </a>
+            <nav class="main-nav">
+                <a href="index.html">Home</a>
+                <a href="products.html">Paintings</a>
+                <a href="cart.html" class="nav-cart active">Cart</a>
+            </nav>
+        </div>
+    </header>
+    <main class="main-content">
+
+        <section class="section cart-section">
+            <h1 class="page-title">Your Cart</h1>
+
+            <p class="empty-state" id="empty-cart" style="display: none;">Your cart is empty. <a
+                    href="products.html">Browse paintings</a>.</p>
+
+            <form id="cart-form" onsubmit="return false;">
+                <div id="cart-content" style="display: none;">
+                    <table class="cart-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Subtotal</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- populated by JS -->
+                        </tbody>
+                    </table>
+                    <div class="cart-actions">
+                        <button type="button" id="update-cart-btn" class="btn btn-secondary">Update Cart</button>
+                        <div class="cart-total">
+                            <strong id="cart-total">Total: </strong>
+                            <a href="checkout.html" class="btn btn-primary">Proceed to Checkout</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const tableBody = document.querySelector('.cart-table tbody');
+                const emptyState = document.getElementById('empty-cart');
+                const cartContent = document.getElementById('cart-content');
+                const totalEl = document.getElementById('cart-total');
+
+                function renderCart() {
+                    const cart = CartManager.getCart();
+                    let total = 0;
+
+                    const cartProducts = Object.keys(cart).map(id => {
+                        const product = products.find(p => p.id === parseInt(id, 10));
+                        if (product) {
+                            return {
+                                ...product,
+                                quantity: cart[id],
+                                subtotal: product.price * cart[id]
+                            };
+                        }
+                        return null;
+                    }).filter(Boolean);
+
+                    if (cartProducts.length === 0) {
+                        emptyState.style.display = 'block';
+                        cartContent.style.display = 'none';
+                    } else {
+                        emptyState.style.display = 'none';
+                        cartContent.style.display = 'block';
+
+                        tableBody.innerHTML = '';
+                        cartProducts.forEach(p => {
+                            total += p.subtotal;
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                            <td class="cart-product">
+                                <img src="${p.image_path}" alt="${p.name}" onerror="handleImageError(this)">
+                                <span>${p.name}</span>
+                            </td>
+                            <td>${formatPrice(p.price)}</td>
+                            <td>
+                                <input type="number" class="qty-input" data-id="${p.id}" value="${p.quantity}" min="1" max="${p.stock}">
+                            </td>
+                            <td>${formatPrice(p.subtotal)}</td>
+                            <td>
+                                <a href="#" class="btn-remove" data-id="${p.id}">Remove</a>
+                            </td>
+                        `;
+                            tableBody.appendChild(tr);
+                        });
+
+                        totalEl.textContent = 'Total: ' + formatPrice(total);
+
+                        document.querySelectorAll('.btn-remove').forEach(btn => {
+                            btn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                if (confirm('Remove this item?')) {
+                                    CartManager.removeItem(e.target.dataset.id);
+                                    renderCart();
+                                }
+                            });
+                        });
+                    }
+                }
+
+                renderCart();
+
+                document.getElementById('update-cart-btn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.querySelectorAll('.qty-input').forEach(input => {
+                        CartManager.updateItem(input.dataset.id, parseInt(input.value, 10));
+                    });
+                    renderCart();
+                });
+            });
+        </script>
+
+    </main>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <span class="logo-icon">🕉</span>
+                <span>Indian Idol Paintings</span>
+            </div>
+            <p class="footer-tagline">Traditional Indian Idol Paintings — Handcrafted with devotion.</p>
+            <p class="footer-copy">&copy; 2026 Indian Idol Paintings. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

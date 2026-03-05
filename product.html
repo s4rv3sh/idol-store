@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Indian Idol Paintings</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Source+Sans+3:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">🕉</span>
+                <span class="logo-text">Indian Idol Paintings</span>
+            </a>
+            <nav class="main-nav">
+                <a href="index.html">Home</a>
+                <a href="products.html">Paintings</a>
+                <a href="cart.html" class="nav-cart">Cart</a>
+            </nav>
+        </div>
+    </header>
+    <main class="main-content">
+
+        <section class="section product-detail" id="product-detail-container">
+            <!-- populated by JS -->
+        </section>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const container = document.getElementById('product-detail-container');
+                const urlParams = new URLSearchParams(window.location.search);
+                const id = parseInt(urlParams.get('id'), 10);
+
+                const product = products.find(p => p.id === id);
+
+                if (!product) {
+                    window.location.href = 'products.html';
+                    return;
+                }
+
+                document.title = `${product.name} - Indian Idol Paintings`;
+
+                const inStock = product.stock > 0;
+
+                container.innerHTML = `
+                <div class="product-detail-grid">
+                    <div class="product-detail-image">
+                        <img src="${product.image_path}" alt="${product.name}" onerror="handleImageError(this)">
+                    </div>
+                    <div class="product-detail-info">
+                        <span class="product-category">${product.category_name}</span>
+                        <h1>${product.name}</h1>
+                        <p class="product-detail-price">${formatPrice(product.price)}</p>
+                        <div class="product-detail-desc">${product.description.replace(/\n/g, '<br>')}</div>
+                        <p class="product-stock">${inStock ? 'In stock' : 'Out of stock'}</p>
+                        ${inStock ? `
+                        <form id="add-to-cart-form" class="add-to-cart-form">
+                            <label for="qty">Quantity:</label>
+                            <input type="number" id="qty" name="quantity" value="1" min="1" max="${product.stock}">
+                            <button type="submit" class="btn btn-primary">Add to Cart</button>
+                        </form>
+                        ` : ''}
+                        <a href="products.html" class="btn btn-secondary back-link">← Back to Paintings</a>
+                    </div>
+                </div>
+            `;
+
+                if (inStock) {
+                    document.getElementById('add-to-cart-form').addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        const qty = parseInt(document.getElementById('qty').value, 10);
+                        if (qty > 0 && qty <= product.stock) {
+                            CartManager.addItem(product.id, qty);
+                            window.location.href = 'cart.html';
+                        }
+                    });
+                }
+            });
+        </script>
+
+    </main>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <span class="logo-icon">🕉</span>
+                <span>Indian Idol Paintings</span>
+            </div>
+            <p class="footer-tagline">Traditional Indian Idol Paintings — Handcrafted with devotion.</p>
+            <p class="footer-copy">&copy; 2026 Indian Idol Paintings. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

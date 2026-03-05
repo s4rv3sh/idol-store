@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Indian Idol Paintings</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">🕉</span>
+                <span class="logo-text">Indian Idol Paintings</span>
+            </a>
+            <nav class="main-nav">
+                <a href="index.html" class="active">Home</a>
+                <a href="products.html">Paintings</a>
+                <a href="cart.html" class="nav-cart">Cart</a>
+            </nav>
+        </div>
+    </header>
+    <main class="main-content">
+
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Indian Idol Paintings</h1>
+                <p class="hero-sub">Handcrafted devotional art for your home and temple. Lord Ganesha, Krishna, Lakshmi, Shiva & more.</p>
+                <a href="products.html" class="btn btn-primary">Shop Paintings</a>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Featured Paintings</h2>
+            <div class="product-grid" id="featured-products">
+                <!-- populated by JS -->
+            </div>
+            <p class="section-cta"><a href="products.html" class="btn btn-secondary">View All Paintings</a></p>
+        </section>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const grid = document.getElementById('featured-products');
+            // Get first 8 products
+            const featured = products.slice(0, 8);
+            
+            featured.forEach(p => {
+                const article = document.createElement('article');
+                article.className = 'product-card';
+                article.innerHTML = `
+                    <a href="product.html?id=${p.id}" class="product-image-wrap">
+                        <img src="${p.image_path}" alt="${p.name}" onerror="handleImageError(this)">
+                    </a>
+                    <div class="product-info">
+                        <span class="product-category">${p.category_name}</span>
+                        <h3><a href="product.html?id=${p.id}">${p.name}</a></h3>
+                        <p class="product-price">${formatPrice(p.price)}</p>
+                        <a href="product.html?id=${p.id}" class="btn btn-small">View</a>
+                    </div>
+                `;
+                grid.appendChild(article);
+            });
+        });
+        </script>
+
+    </main>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <span class="logo-icon">🕉</span>
+                <span>Indian Idol Paintings</span>
+            </div>
+            <p class="footer-tagline">Traditional Indian Idol Paintings — Handcrafted with devotion.</p>
+            <p class="footer-copy">&copy; 2026 Indian Idol Paintings. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

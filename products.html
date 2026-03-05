@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paintings - Indian Idol Paintings</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Source+Sans+3:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">🕉</span>
+                <span class="logo-text">Indian Idol Paintings</span>
+            </a>
+            <nav class="main-nav">
+                <a href="index.html">Home</a>
+                <a href="products.html" class="active">Paintings</a>
+                <a href="cart.html" class="nav-cart">Cart</a>
+            </nav>
+        </div>
+    </header>
+    <main class="main-content">
+
+        <section class="section">
+            <h1 class="page-title">Indian Idol Paintings</h1>
+            <div class="filter-bar" id="category-filters">
+                <button class="filter-btn active" data-category="0">All</button>
+                <!-- categories populated by JS -->
+            </div>
+            <div class="product-grid" id="product-grid">
+                <!-- populated by JS -->
+            </div>
+            <p class="empty-state" id="empty-state" style="display: none;">No paintings found in this category.</p>
+        </section>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const filtersContainer = document.getElementById('category-filters');
+                const grid = document.getElementById('product-grid');
+                const emptyState = document.getElementById('empty-state');
+
+                // Populate categories
+                categories.forEach(c => {
+                    const btn = document.createElement('button');
+                    btn.className = 'filter-btn';
+                    btn.dataset.category = c.id;
+                    btn.textContent = c.name;
+                    filtersContainer.appendChild(btn);
+                });
+
+                // Render products
+                function renderProducts(categoryId = 0) {
+                    grid.innerHTML = '';
+                    let filtered = products;
+                    if (categoryId > 0) {
+                        filtered = products.filter(p => p.category_id === categoryId);
+                    }
+
+                    if (filtered.length === 0) {
+                        emptyState.style.display = 'block';
+                    } else {
+                        emptyState.style.display = 'none';
+                        filtered.forEach(p => {
+                            const article = document.createElement('article');
+                            article.className = 'product-card';
+                            article.innerHTML = `
+                            <a href="product.html?id=${p.id}" class="product-image-wrap">
+                                <img src="${p.image_path}" alt="${p.name}" onerror="handleImageError(this)">
+                            </a>
+                            <div class="product-info">
+                                <span class="product-category">${p.category_name}</span>
+                                <h3><a href="product.html?id=${p.id}">${p.name}</a></h3>
+                                <p class="product-price">${formatPrice(p.price)}</p>
+                                <a href="product.html?id=${p.id}" class="btn btn-small">View</a>
+                            </div>
+                        `;
+                            grid.appendChild(article);
+                        });
+                    }
+                }
+
+                // Handle filter clicks
+                filtersContainer.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'BUTTON') {
+                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        renderProducts(parseInt(e.target.dataset.category, 10));
+
+                        // Update URL without reloading
+                        const url = new URL(window.location);
+                        if (e.target.dataset.category !== "0") {
+                            url.searchParams.set('category', e.target.dataset.category);
+                        } else {
+                            url.searchParams.delete('category');
+                        }
+                        window.history.pushState({}, '', url);
+                    }
+                });
+
+                // Initial render based on URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const catParam = parseInt(urlParams.get('category'), 10);
+
+                if (catParam && !isNaN(catParam)) {
+                    const targetBtn = filtersContainer.querySelector(`[data-category="${catParam}"]`);
+                    if (targetBtn) {
+                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                        targetBtn.classList.add('active');
+                        renderProducts(catParam);
+                    } else {
+                        renderProducts(0);
+                    }
+                } else {
+                    renderProducts(0);
+                }
+            });
+        </script>
+
+    </main>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <span class="logo-icon">🕉</span>
+                <span>Indian Idol Paintings</span>
+            </div>
+            <p class="footer-tagline">Traditional Indian Idol Paintings — Handcrafted with devotion.</p>
+            <p class="footer-copy">&copy; 2026 Indian Idol Paintings. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+
+</html>
